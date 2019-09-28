@@ -2,6 +2,7 @@ import tensorflow as tf
 import cv2
 import os
 import numpy as np
+import keras
 
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 x_train = x_train.reshape(60000, 784)
@@ -20,13 +21,13 @@ y_test = tf.keras.utils.to_categorical(y_test, num_classes)
 
 
 # create model architecture
-model = tf.keras.Sequential()
-model.add(tf.keras.layers.Dense(64, activation='relu', input_shape=(784, )))
-model.add(tf.keras.layers.Dense(64, activation='relu'))
-model.add(tf.keras.layers.Dense(10, activation='softmax'))
-model.compile(optimizer=tf.keras.optimizers.RMSprop(lr=0.0001),
-              loss=tf.keras.losses.categorical_crossentropy,
-              metrics=[tf.keras.metrics.categorical_accuracy])
+model = keras.Sequential()
+model.add(keras.layers.Dense(64, activation='relu', input_shape=(784, )))
+model.add(keras.layers.Dense(64, activation='relu'))
+model.add(keras.layers.Dense(10, activation='softmax'))
+model.compile(optimizer=keras.optimizers.RMSprop(lr=0.0001),
+              loss=keras.losses.categorical_crossentropy,
+              metrics=[keras.metrics.categorical_accuracy])
 
 # learning
 model.fit(x_train, y_train, epochs=10, batch_size=32)
@@ -38,6 +39,8 @@ converter = tf.lite.TFLiteConverter.from_keras_model_file("keras_model.h5")
 tflite_model = converter.convert()
 open("converted_keras_model.tflite", "wb").write(tflite_model)
 
+
+model.predict(x_test)
 
 def save_images():
     image_save_dir = "./images"
